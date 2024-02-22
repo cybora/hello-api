@@ -2,7 +2,7 @@ GO_VERSION :=1.21
 
 .PHONY: install-go init-go
 
-setup: install-go init-go install-lint
+setup: install-go init-go install-lint copy-hooks
 
 install_go:
 	 wget "https://golang.org/dl/go$(GO_VERSION).linux-amd64.tar.gz"
@@ -33,3 +33,7 @@ install-lint:
 
  static-check:
 	golangci-lint run
+
+copy-hooks:
+	chmod +x scripts/hooks/*
+	cp -r scripts/hooks .git/.
