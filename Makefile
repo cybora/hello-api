@@ -24,3 +24,6 @@ coverage:
 
 report:
 	go tool cover -html=coverage.out -o cover.html
+
+check_format:
+	test -z $$(go fmt ./...)
