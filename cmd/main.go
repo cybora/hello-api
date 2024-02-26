@@ -17,7 +17,7 @@ func main() {
 	translationService := translation.NewStaticService()
 	translationHandler := rest.NewTranslateHandler(translationService)
 
-	mux.HandleFunc("/hello", translationHandler.TranslateHandler)
+	mux.HandleFunc("/translate/hello", translationHandler.TranslateHandler)
 	mux.HandleFunc("/health", handlers.HealthCheck)
 
 	log.Printf("Listening on %s\n", addr)
