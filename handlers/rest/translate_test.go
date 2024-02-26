@@ -7,8 +7,16 @@ import (
 	"testing"
 
 	"github.com/cybora/shipping_go/handlers/rest"
-	"github.com/cybora/shipping_go/translation"
 )
+
+type stubbedService struct{}
+
+func (s stubbedService) Translate(word string, language string) string {
+	if word == "foo" {
+		return "bar"
+	}
+	return ""
+}
 
 func TestTranslateAPI(t *testing.T) {
 	tt := []struct {
@@ -18,25 +26,25 @@ func TestTranslateAPI(t *testing.T) {
 		ExpectedTranslation string
 	}{
 		{
-			Endpoint:            "/hello",
+			Endpoint:            "/translate/foo",
 			StatusCode:          http.StatusOK,
 			ExpectedLanguage:    "english",
-			ExpectedTranslation: "hello",
+			ExpectedTranslation: "bar",
 		},
 		{
-			Endpoint:            "/hello?language=german",
+			Endpoint:            "/translate/foo?language=german",
 			StatusCode:          http.StatusOK,
 			ExpectedLanguage:    "german",
-			ExpectedTranslation: "hallo",
+			ExpectedTranslation: "bar",
 		}, {
-			Endpoint:            "/hello?language=dutch",
+			Endpoint:            "translate/baz",
 			StatusCode:          http.StatusNotFound,
 			ExpectedLanguage:    "",
 			ExpectedTranslation: "",
 		},
 	}
 
-	underTest := rest.NewTranslateHandler(translation.NewStaticService())
+	underTest := rest.NewTranslateHandler(&stubbedService{})
 	handler := http.HandlerFunc(underTest.TranslateHandler)
 
 	for _, test := range tt {
