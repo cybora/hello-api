@@ -6,6 +6,7 @@ import (
 
 	"github.com/cybora/shipping_go/handlers"
 	"github.com/cybora/shipping_go/handlers/rest"
+	"github.com/cybora/shipping_go/translation"
 )
 
 func main() {
@@ -13,7 +14,10 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/hello", rest.TranslateHandler)
+	translationService := translation.NewStaticService()
+	translationHandler := rest.NewTranslateHandler(translationService)
+
+	mux.HandleFunc("/hello", translationHandler.TranslateHandler)
 	mux.HandleFunc("/health", handlers.HealthCheck)
 
 	log.Printf("Listening on %s\n", addr)

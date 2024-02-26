@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/cybora/shipping_go/handlers/rest"
+	"github.com/cybora/shipping_go/translation"
 )
 
 func TestTranslateAPI(t *testing.T) {
@@ -35,7 +36,8 @@ func TestTranslateAPI(t *testing.T) {
 		},
 	}
 
-	handler := http.HandlerFunc(rest.TranslateHandler)
+	underTest := rest.NewTranslateHandler(translation.NewStaticService())
+	handler := http.HandlerFunc(underTest.TranslateHandler)
 
 	for _, test := range tt {
 		rr := httptest.NewRecorder()

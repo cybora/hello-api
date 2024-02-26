@@ -4,9 +4,21 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
-
-	"github.com/cybora/shipping_go/translation"
 )
+
+type Translator interface {
+	Translate(word string, language string) string
+}
+
+type TranslateHandler struct {
+	service Translator
+}
+
+func NewTranslateHandler(service Translator) *TranslateHandler {
+	return &TranslateHandler{
+		service: service,
+	}
+}
 
 type Resp struct {
 	Language    string `json:"language"`
@@ -15,7 +27,7 @@ type Resp struct {
 
 const defaultLanguage = "english"
 
-func TranslateHandler(w http.ResponseWriter, r *http.Request) {
+func (t TranslateHandler) TranslateHandler(w http.ResponseWriter, r *http.Request) {
 	enc := json.NewEncoder(w)
 	w.Header().Set("Content-Type", "application/json; charset=utf8")
 	language := r.URL.Query().Get("language")
@@ -23,7 +35,7 @@ func TranslateHandler(w http.ResponseWriter, r *http.Request) {
 		language = defaultLanguage
 	}
 	word := strings.ReplaceAll(r.URL.Path, "/", "")
-	translation := translation.Translate(word, language)
+	translation := t.service.Translate(word, language)
 	if translation == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
